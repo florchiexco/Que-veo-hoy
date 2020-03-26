@@ -76,7 +76,7 @@ function ControladorPeliculas() {
             $.getJSON(servidor + "/peliculas?" + query,
                 function(data) {
                     //se ejecuta la funcion cargarListado() pasandole como parametro las peliculas que se obtuvieron
-                    self.cargarListado(data); //o data.peliculas
+                    self.cargarListado(data.peliculas);
                     
                     //se ejecuta la fucion cargarBotones() pasandole el total de peliculas que se obtienen como resultado
                     self.cargarBotones(data.total);

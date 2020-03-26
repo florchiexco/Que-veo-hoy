@@ -1,20 +1,49 @@
 const db = require("../lib/conexionbd.js");
 
 const verTodas = (req, res) => {
-  db.query(
-    "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama FROM peliculas AS p",
-    function(err, rows) {
+  var { anio, titulo, genero, columna_orden, tipo_orden, pagina, cantidad } = req.query;
+
+  if (!cantidad) {
+    cantidad = 40;
+  }
+  var sql = hacerSQL(titulo, anio, genero, columna_orden, tipo_orden, pagina, cantidad);
+  var sqlCount = contarSQL(titulo, anio, genero);
+
+  db.query(sql, function(err, rows, fields) {
+    db.query(sqlCount, function(err, rows2, fields) {
       if (err) {
-        res.status(500).send("Internal error.");
-        throw err;
-      }
-      if (!rows.length) {
-        return res.status(400).send("No hay peliculas.");
-      }
-      res.send(rows);
-    }
-  );
+        console.log(rows);
+        console.log(rows2);
+        
+        return res.status(404).send("Internal error.");
+      }     
+      var respuesta = {
+        peliculas: rows,
+        total: rows2[0].total
+      };      
+      console.log(respuesta);
+      
+      res.send(JSON.stringify(respuesta));
+    });
+  });
 };
+
+function hacerSQL( titulo, anio, genero, columna_orden, tipo_orden, pagina, cantidad) {
+  var sql = "SELECT * FROM peliculas ORDER BY " + columna_orden + " " + tipo_orden + " LIMIT " + (pagina - 1) * cantidad + "," + cantidad + "";
+  if (titulo != undefined || anio != undefined || genero != undefined) {
+    query ="SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, g.nombre as genero FROM peliculas p INNER JOIN generos AS g ON p.genero_id = g.id WHERE titulo LIKE '" + titulo +"%' OR p.anio = '" + anio + "' OR g.id = '" + genero + "' ORDER BY " + columna_orden + " " + tipo_orden + " LIMIT " + (pagina - 1) * cantidad + "," + cantidad + "";
+  }
+  return sql;
+}
+
+function contarSQL(titulo, anio, genero) {
+  var sql = "SELECT COUNT(*) as total FROM peliculas";
+  if (titulo != undefined || anio != undefined || genero != undefined) {
+    sql =
+      "SELECT COUNT(*) AS total FROM peliculas p INNER JOIN generos AS g ON p.genero_id = g.id WHERE titulo LIKE '" + titulo + "%' OR p.anio = '" + anio + "' OR g.id = '" + genero + "'";
+  }
+  return sql;
+}
 
 module.exports = {
   verTodas
