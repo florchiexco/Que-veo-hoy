@@ -77,7 +77,6 @@ const verRecomendacion= (req, res) => {
       'peliculas': respuesta
     };
     console.log(response);
-    
     res.send(JSON.stringify(response));
   });
 }
