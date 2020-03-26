@@ -4,6 +4,7 @@ const router = express.Router();
 
 /* getters */
 router.get("/", peliculasController.verTodas);
-router.get("/:id", peliculasController.getById);
+router.get("/:id", peliculasController.buscarPorID);
+router.get("/recomendacion", peliculasController.verRecomendacion);
 
 module.exports = router;
