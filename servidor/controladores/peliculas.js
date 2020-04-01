@@ -11,10 +11,7 @@ const verTodas = (req, res) => {
 
   db.query(sql, function(err, rows, fields) {
     db.query(sqlCount, function(err, rows2, fields) {
-      if (err) {
-        console.log(rows);
-        console.log(rows2);
-        
+      if (err) {        
         return res.status(404).send("Internal error.");
       }     
       var respuesta = {
@@ -28,21 +25,26 @@ const verTodas = (req, res) => {
 
 const buscarPorID= (req, res) => {
   const {id} = req.params;
-  let sql = "SELECT p.titulo AS titulo, p.duracion AS duracion, p.trama AS trama, p.director AS director, p.anio AS anio, p.fecha_lanzamiento AS fecha_lanzamiento, p.puntuacion AS puntuacion, p.poster AS poster, a.nombre AS actores, g.nombre FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id INNER JOIN actor_pelicula ac ON p.id = ac.pelicula_id INNER JOIN actor a ON ac.actor_id = a.id WHERE p.id = ?;";
+  let sql = "SELECT p.titulo AS titulo, p.duracion AS duracion, p.trama AS trama, p.director AS director, p.anio AS anio, p.fecha_lanzamiento AS fecha_lanzamiento, p.puntuacion AS puntuacion, p.poster AS poster, g.nombre FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE p.id = ?;";
       
-  db.query(sql, id, function(err, rows, fields){
-      if (err) {
-          console.log(error.message);
-          return res.status(404).send('Internal error');
-      }
-        var response = {
-        'pelicula': rows[0],
-        'actores' : rows,
-        'genero' : rows[0]
-      };
+  db.query(sql, id, (err, results) => {
+
+    if (err) {
+      res.status(500).send(err);
+    }
+
+    let sql2 = `SELECT actor_id, nombre FROM actor_pelicula ap INNER JOIN actor a ON (a.id = ap.actor_id ) WHERE pelicula_id =?`;
+    db.query(sql2, id, (err, results2) => {
+      
+      var response= { pelicula: results[0], 
+                      actores: results2 , 
+                      genero: results[0]};
+
       res.send(JSON.stringify(response));
+    
+    });
   });
-}
+};
 
 //Funciones auxiliares
 
