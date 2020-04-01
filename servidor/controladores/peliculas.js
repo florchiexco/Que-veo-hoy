@@ -35,11 +35,11 @@ const buscarPorID= (req, res) => {
 
     let sql2 = `SELECT actor_id, nombre FROM actor_pelicula ap INNER JOIN actor a ON (a.id = ap.actor_id ) WHERE pelicula_id =?`;
     db.query(sql2, id, (err, results2) => {
-      
+
       var response= { pelicula: results[0], 
                       actores: results2 , 
                       genero: results[0]};
-
+        
       res.send(JSON.stringify(response));
     
     });
@@ -72,13 +72,11 @@ const verRecomendacion= (req, res) => {
   
   db.query(sql, function(err, respuesta, fields){
     if (err) {
-      console.log(error.message);
       return res.status(404).send("Internal error");
     }
     var response = {
       'peliculas': respuesta
-    };
-    console.log(response);
+    };    
     res.send(JSON.stringify(response));
   });
 }
@@ -86,15 +84,15 @@ const verRecomendacion= (req, res) => {
 const recomendacionSQL= (genero, anioInicio, anioFin, puntuacion) => {
   let sql = '';
   if (genero != undefined && anioInicio != undefined && anioFin != undefined) {
-    sql = "SELECT * FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "' AND ( fecha_lanzamiento >= '" + anioInicio + "' AND fecha_lanzamiento <= '" + anioFin + "' )";
+    sql = "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, p.genero_id AS genero_id FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "' AND ( fecha_lanzamiento >= '" + anioInicio + "' AND fecha_lanzamiento <= '" + anioFin + "' )";
   }else if(anioInicio != undefined && anioFin != undefined) {
-    sql = "SELECT * FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE ( fecha_lanzamiento >= '" + anioInicio + "' AND fecha_lanzamiento <= '" + anioFin + "' )";
+    sql = "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, p.genero_id AS genero_id FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE ( fecha_lanzamiento >= '" + anioInicio + "' AND fecha_lanzamiento <= '" + anioFin + "' )";
   }else if(genero != undefined && puntuacion != undefined){
-    sql = "SELECT * FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "' AND p.puntuacion >= '" + puntuacion + "'";
+    sql = "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, p.genero_id AS genero_id FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "' AND p.puntuacion >= '" + puntuacion + "'";
   }else if(puntuacion != undefined){
-    sql = "SELECT * FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE  p.puntuacion >= '" + puntuacion + "'";
+    sql = "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, p.genero_id AS genero_id FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE  p.puntuacion >= '" + puntuacion + "'";
   }else {
-    sql = "SELECT * FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "'";
+    sql = "SELECT p.id AS id, p.titulo AS titulo, p.duracion AS duracion, p.director AS director, p.fecha_lanzamiento AS fecha_lanzamiento, p.anio AS anio, p.puntuacion AS puntuacion, p.poster AS poster, p.trama AS trama, p.genero_id AS genero_id FROM peliculas p INNER JOIN generos g ON p.genero_id = g.id WHERE g.nombre = '" + genero + "'";
   }
   return sql;
 }
