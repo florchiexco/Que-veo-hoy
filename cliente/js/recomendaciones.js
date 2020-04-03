@@ -159,7 +159,9 @@ function ControladorRecomendaciones() {
         $(".datos-pelicula .imagen").attr("src", data.poster);
         $(".datos-pelicula .trama").html(data.trama);
         $(".datos-pelicula .titulo").html(data.titulo);
-        $(".datos-pelicula .genero").html(data.nombre);
+        $(".datos-pelicula .genero").html(data.genero);
+        console.log(data);
+        
 
     }
 
